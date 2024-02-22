@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "114182687338",
+    "project_id": "blacksea-4a970",
+    "storage_bucket": "blacksea-4a970.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:114182687338:android:b5f9b8c81da79b45a01813",
+        "android_client_info": {
+          "package_name": "com.mananbhimjiyani.blackseaproduct"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAyLIviER8A9ha44VNG1If2icEzNQV4SPU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
