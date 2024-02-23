@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
-import 'product.dart';
+import '../Schemas/product.dart';
 import 'productDetails.dart';
-import 'drawer_widget.dart';
-import 'bottom_navigation_bar_widget.dart';
+import '../widget/drawer_widget.dart';
+import '../widget/bottom_navigation_bar_widget.dart';
+import '../DummyData/ProductsDummy.dart';
 
 class ProductList extends StatefulWidget {
   @override
@@ -15,6 +16,7 @@ class ProductList extends StatefulWidget {
 class _ProductListState extends State<ProductList> {
   late List<Product> _products;
   late List<Product> _filteredProducts;
+  late Map<int, TextEditingController> _quantityControllers; // Define _quantityControllers here
   TextEditingController _searchController = TextEditingController();
   late Timer _timer;
 
@@ -23,6 +25,7 @@ class _ProductListState extends State<ProductList> {
     super.initState();
     _products = [];
     _filteredProducts = [];
+    _quantityControllers = {}; // Initialize _quantityControllers here
     _loadProducts();
     _startTimer();
   }
@@ -39,17 +42,26 @@ class _ProductListState extends State<ProductList> {
   }
 
   void _loadProducts() async {
-    final response =
-        await http.get(Uri.parse('http://localhost:3000/products'));
-    if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
-      setState(() {
-        _products = data.map((json) => Product.fromJson(json)).toList();
-        _filteredProducts = List.from(_products); // Initialize filtered list
-      });
-    } else {
-      throw Exception('Failed to load products');
-    }
+    List<Product> dummyProducts = generateDummyProducts();
+    setState(() {
+      _products = dummyProducts;
+      _filteredProducts = List.from(_products);
+      _quantityControllers = Map.fromIterable(_products,
+          key: (product) => _products.indexOf(product),
+          value: (product) => TextEditingController());
+    });
+    // final response =
+    //     await http.get(Uri.parse('http://172.20.10.8:3000/products'));
+    // if (response.statusCode == 200) {
+    //   final List<dynamic> data = json.decode(response.body);
+    //   setState(() {
+    //     _products = data.map((json) => Product.fromJson(json)).toList();
+    //     _filteredProducts = List.from(_products); // Initialize filtered list
+    //   });
+    // } else {
+    //   throw Exception('Failed to load products');
+    // }
+
   }
 
   void _filterProducts(String query) {

@@ -3,19 +3,28 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
 import 'productDetails.dart';
-import 'product.dart';
-import 'product_list.dart';
-import 'stockMove.dart';
-import 'stockMoveList.dart';
-import 'drawer_widget.dart';
-import 'bottom_navigation_bar_widget.dart';
+import '../Schemas/product.dart';
+import '../views/product_list.dart';
+import '../views/stockMove.dart';
+import '../views/stockMoveList.dart';
+import '../widget/drawer_widget.dart';
+import '../widget/bottom_navigation_bar_widget.dart';
+import 'package:intl/intl.dart';
+import '../DummyData/ProductsDummy.dart';
 
-class _ProductRequestState extends State<ProductRequest> {
+class ProductRequestCreation extends StatefulWidget {
+  @override
+  _ProductRequestCreationState createState() => _ProductRequestCreationState();
+}
+
+class _ProductRequestCreationState extends State<ProductRequestCreation> {
   late List<Product> _products;
   late List<Product> _filteredProducts;
   late Map<int, TextEditingController> _quantityControllers = {};
   TextEditingController _searchController = TextEditingController();
   late Timer _timer;
+  String? _selectedValue;
+  late FocusNode _focusNode;
 
   @override
   void initState() {
@@ -24,38 +33,58 @@ class _ProductRequestState extends State<ProductRequest> {
     _filteredProducts = [];
     _loadProducts();
     _startTimer();
+    _focusNode = FocusNode();
   }
 
   @override
   void dispose() {
     _timer.cancel();
-    _quantityControllers.values.forEach((controller) {
-      controller.dispose();
-    });
+    _quantityControllers.values.forEach((controller) => controller.dispose());
+    _focusNode.dispose(); // Dispose the focus node
     super.dispose();
   }
 
   void _startTimer() {
     const duration = Duration(seconds: 30);
-    _timer = Timer.periodic(duration, (Timer t) => _loadProducts());
+    _timer = Timer.periodic(duration, (Timer t) {
+      // Check if any text field is focused
+      bool isTextFieldFocused = _quantityControllers.values.any((controller) =>
+          controller.text.isNotEmpty &&
+          controller.selection.baseOffset != -1 &&
+          _focusNode.hasFocus); // Check if any text field is focused
+      if (!isTextFieldFocused) {
+        _loadProducts();
+      } else {
+        t.cancel();
+      }
+    });
   }
 
   void _loadProducts() async {
-    final response =
-        await http.get(Uri.parse('http://localhost:3000/products'));
-    if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
-      setState(() {
-        _products = data.map((json) => Product.fromJson(json)).toList();
-        _filteredProducts = List.from(_products); // Initialize filtered list
-        // Initialize quantity controllers
-        _quantityControllers = Map.fromIterable(_products,
-            key: (product) => _products.indexOf(product),
-            value: (product) => TextEditingController());
-      });
-    } else {
-      throw Exception('Failed to load products');
-    }
+    List<Product> dummyProducts = generateDummyProducts();
+    setState(() {
+      _products = dummyProducts;
+      _filteredProducts = List.from(_products);
+      _quantityControllers = Map.fromIterable(_products,
+          key: (product) => _products.indexOf(product),
+          value: (product) => TextEditingController());
+    });
+    // final response =
+    //     await http.get(Uri.parse('http://172.20.10.8:3000/products'));
+    // if (response.statusCode == 200) {
+    //   final List<dynamic> data = json.decode(response.body);
+    //   setState(() {
+    //     _products = data.map((json) => Product.fromJson(json)).toList();
+    //     _filteredProducts = List.from(_products); // Initialize filtered list
+    //     // Initialize quantity controllers
+    //     _quantityControllers = Map.fromIterable(_products,
+    //         key: (product) => _products.indexOf(product),
+    //         value: (product) => TextEditingController());
+    //   });
+    // } else {
+    //   throw Exception('Failed to load products');
+    // }
+
   }
 
   void _filterProducts(String query) {
@@ -108,7 +137,9 @@ class _ProductRequestState extends State<ProductRequest> {
             ),
             SizedBox(width: 8),
             // Add space between the logo and the product list title
-            Text('Request'),
+            Text('Request Creation',
+                style:
+                    TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)),
           ],
         ),
         actions: [
@@ -130,9 +161,69 @@ class _ProductRequestState extends State<ProductRequest> {
               child: Text('No products available'),
             )
           : Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Expanded(
+                // Container(
+                //   color: Colors.grey.shade300, // Set backdrop color
+                //   padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                //   child: Row(
+                //     crossAxisAlignment: CrossAxisAlignment.center,
+                //     mainAxisAlignment: MainAxisAlignment.center,
+                //     children: [
+                //       if (_selectedValue != 'Create New Request')
+                //         Text(
+                //           DateFormat('yyyy-MM-dd').format(DateTime.now()),
+                //           style: TextStyle(
+                //             fontWeight: FontWeight.bold,
+                //             fontSize: 20,
+                //           ),
+                //         ),
+                //       Container(
+                //         alignment: Alignment.center,
+                //         child: DropdownButton<String>(
+                //           hint: Text('Request'),
+                //           value: _selectedValue,
+                //           alignment: Alignment.center,
+                //           onChanged: (String? newValue) {
+                //             setState(() {
+                //               _selectedValue = newValue;
+                //             });
+                //           },
+                //           items: [
+                //             DropdownMenuItem<String>(
+                //               value: 'Create New Request',
+                //               child: Center(child: Text('Create New Request')),
+                //             ),
+                //             DropdownMenuItem<String>(
+                //               value: '1',
+                //               child: Center(child: Text('1')),
+                //             ),
+                //             DropdownMenuItem<String>(
+                //               value: '2',
+                //               child: Center(child: Text('2')),
+                //             ),
+                //             DropdownMenuItem<String>(
+                //               value: '3',
+                //               child: Center(child: Text('3')),
+                //             ),
+                //             DropdownMenuItem<String>(
+                //               value: '4',
+                //               child: Center(child: Text('4')),
+                //             ),
+                //             DropdownMenuItem<String>(
+                //               value: '5',
+                //               child: Center(child: Text('5')),
+                //             ),
+                //             DropdownMenuItem<String>(
+                //               value: '6',
+                //               child: Center(child: Text('6')),
+                //             ),
+                //           ],
+                //         ),
+                //       ),
+                //     ],
+                //   ),
+                // ),
+                Flexible(
                   child: Container(
                     height: MediaQuery.of(context).size.height * 1,
                     child: ListView.builder(
@@ -272,96 +363,27 @@ class _ProductRequestState extends State<ProductRequest> {
                 ),
               ],
             ),
-
-      // : Column(
-      //     children: ListView.builder(
-      //       itemCount: _filteredProducts.length,
-      //       itemBuilder: (context, index) {
-      //         final product = _filteredProducts[index];
-      //         return GestureDetector(
-      //           onTap: () {
-      //             _navigateToProductDetails(product);
-      //           },
-      //           child: ListTile(
-      //             contentPadding:
-      //                 EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-      //             // Adjust padding as needed
-      //             leading: product.productImage1 != null &&
-      //                     product.productImage1!.isNotEmpty
-      //                 ? Image.network(
-      //                     product.productImage1!,
-      //                     width: 80, // Increase image width
-      //                     height: 80, // Increase image height
-      //                     fit: BoxFit.cover,
-      //                   )
-      //                 : Icon(Icons.image, size: 80, color: Colors.grey),
-      //             title: Text(
-      //               product.productName.isNotEmpty
-      //                   ? (product.productName.length > 20
-      //                       ? product.productName.substring(0, 20) + "..."
-      //                       : product.productName)
-      //                   : 'Product Name Unavailable',
-      //               style: TextStyle(
-      //                 fontSize: 14,
-      //                 fontWeight: FontWeight.bold,
-      //                 color: product.productName.isNotEmpty
-      //                     ? Colors.black
-      //                     : Colors.red,
-      //               ),
-      //             ),
-      //             subtitle: Column(
-      //               children: [
-      //                 Text(
-      //                   product.eachUnitContains + ' ' + product.unit,
-      //                   style: TextStyle(
-      //                     fontSize: 12,
-      //                   ),
-      //                 ),
-      //                 SizedBox(height: 8), // Add some space between the two Text widgets
-      //                 Text(
-      //                   product.brand.isNotEmpty
-      //                       ? (product.brand.length > 18
-      //                       ? '${product.brand.substring(0, 18)}...'
-      //                       : '${product.brand}')
-      //                       : 'Generic',
-      //                   style: TextStyle(
-      //                     fontSize: 12,
-      //                   ),
-      //                 ),
-      //               ],
-      //             ),
-      //
-      //               onTap: () {
-      //               // Navigate to product details page
-      //               _navigateToProductDetails(product);
-      //             },
-      //             trailing: Row(
-      //               mainAxisSize: MainAxisSize.min,
-      //               children: [
-      //                 IconButton(
-      //                   icon: Icon(Icons.check),
-      //                   onPressed: () {
-      //                     // Handle edit button tap
-      //                   },
-      //                 ),
-      //                 IconButton(
-      //                   icon: Icon(Icons.close),
-      //                   onPressed: () {
-      //                     // Handle delete button tap
-      //                   },
-      //                 ),
-      //               ],
-      //             ),
-      //           ),
-      //         );
-      //       },
-      //     ),
-      //   ),
-
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: Icon(Icons.add),
-      ),
+      floatingActionButton: _selectedValue == 'Create New Request'
+          ? FloatingActionButton(
+              onPressed: () {
+                // Action when other values are selected
+              },
+              child: Icon(
+                Icons.add,
+                color: Colors.white,
+              ),
+              backgroundColor: Colors.blue,
+            )
+          : FloatingActionButton(
+              onPressed: () {
+                // Action when 'Create New Request' is selected
+              },
+              child: Icon(
+                Icons.check,
+                color: Colors.white,
+              ),
+              backgroundColor: Colors.green,
+            ),
       bottomNavigationBar: AppBottomNavigationBar(currentIndex: _currentIndex),
     );
   }
@@ -407,8 +429,7 @@ class _ProductSearchDelegate extends SearchDelegate<String> {
         return ListTile(
           title: Text(product.productName),
           onTap: () {
-            _navigateToProductDetails(
-                context, product); // Navigate to product details view
+            _navigateToProductDetails(context, product);
           },
         );
       },

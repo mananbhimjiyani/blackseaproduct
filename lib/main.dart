@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'login.dart';
-import 'product_list.dart';
+import 'views/login.dart';
+import 'views/product_list.dart';
 
 void main() async {
   runApp(MyApp());

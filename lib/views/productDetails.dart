@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'product.dart';
-import 'product_list.dart';
-import 'productRequest.dart';
-import 'stockMove.dart';
-import 'stockMoveList.dart';
+import '../Schemas/product.dart';
+import '../views/product_list.dart';
+import '../views/productRequestCreation.dart';
+import '../views/stockMove.dart';
+import '../views/stockMoveList.dart';
+import '../widget/bottom_navigation_bar_widget.dart';
 
 class ProductDetailsView extends StatefulWidget {
   final Product product;
@@ -18,6 +19,7 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
   late TextEditingController _quantityController =
       TextEditingController(text: '0');
   int quantityRequired = 0;
+  int _currentIndex = 0;
 
   @override
   void initState() {
@@ -291,49 +293,7 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.blue,
-        selectedItemColor: Colors.white,
-        currentIndex: 0,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list),
-            label: 'Product',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list_alt_outlined),
-            label: 'Product Request',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.move_down_rounded),
-            label: 'Stock Move',
-          ),
-        ],
-        onTap: (int index) {
-          // Define the destination screen for each bottom navigation item
-          late Widget destinationScreen;
-          switch (index) {
-            case 0:
-              destinationScreen = ProductList();
-              break;
-            case 1:
-              destinationScreen = ProductRequest();
-              break;
-            case 2:
-              destinationScreen = StockMove();
-              break;
-            default:
-              destinationScreen = ProductRequest();
-              break;
-          }
-
-          // Navigate to the selected destination screen
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => destinationScreen),
-          );
-        },
-      ),
+      bottomNavigationBar: AppBottomNavigationBar(currentIndex: _currentIndex),
     );
   }
 }

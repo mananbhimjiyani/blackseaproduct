@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'stockMoveList.dart';
-import 'drawer_widget.dart';
-import 'bottom_navigation_bar_widget.dart';
+import '../widget/drawer_widget.dart';
+import '../widget/bottom_navigation_bar_widget.dart';
+import '../DummyData/LocationDummy.dart';
 
 class StockMove extends StatefulWidget {
   @override
@@ -16,7 +17,7 @@ class _StockMoveState extends State<StockMove> {
   List<String> locations = [];
   int _currentIndex = 2;
 
-  late Widget destinationScreen; // Initialize destinationScreen here
+  late Widget destinationScreen;
 
   @override
   void initState() {
@@ -25,21 +26,26 @@ class _StockMoveState extends State<StockMove> {
   }
 
   void fetchLocations() async {
-    final response =
-        await http.get(Uri.parse('http://localhost:3000/locations'));
+    // final response =
+    //     await http.get(Uri.parse('http://172.20.10.8:3000/locations'));
+    //
+    // if (response.statusCode == 200) {
+    //   List<dynamic> data = json.decode(response.body);
+    //   List<String> fetchedLocations = [];
+    //   for (var location in data) {
+    //     fetchedLocations.add(location['Name']);
+    //   }
+    //   setState(() {
+    //     locations = fetchedLocations;
+    //   });
+    // } else {
+    //   throw Exception('Failed to fetch locations');
+    // }
+    List<String> dummyLocations = generateDummyLocations();
 
-    if (response.statusCode == 200) {
-      List<dynamic> data = json.decode(response.body);
-      List<String> fetchedLocations = [];
-      for (var location in data) {
-        fetchedLocations.add(location['Name']);
-      }
-      setState(() {
-        locations = fetchedLocations;
-      });
-    } else {
-      throw Exception('Failed to fetch locations');
-    }
+    setState(() {
+      locations = dummyLocations;
+    });
   }
 
   void navigateToStoreMoveList() {
@@ -59,13 +65,12 @@ class _StockMoveState extends State<StockMove> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        // Disable the automatic drawer button
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
-              icon: Icon(Icons.menu), // Use the menu icon for the drawer
+              icon: Icon(Icons.menu),
               onPressed: () {
-                Scaffold.of(context).openDrawer(); // Open the drawer
+                Scaffold.of(context).openDrawer();
               },
             );
           },
@@ -77,13 +82,13 @@ class _StockMoveState extends State<StockMove> {
             Padding(
               padding: EdgeInsets.all(8.0),
               child: Image.asset(
-                'assets/images/bsm-logo.png',
+                'assets/images/appbar.png',
                 height: 40,
               ),
             ),
             SizedBox(width: 8),
             // Add space between the logo and the product list title
-            Text('Location'),
+            Text('Location',style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)),
           ],
         ),
       ),

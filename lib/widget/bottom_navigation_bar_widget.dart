@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'product_list.dart';
-import 'productRequest.dart';
-import 'stockMove.dart';
+import '../views/product_list.dart';
+import '../views/productRequestCreation.dart';
+import '../views/stockMove.dart';
+import '../views/productRequestView.dart';
 
 class AppBottomNavigationBar extends StatelessWidget {
   final int currentIndex;
@@ -17,8 +18,6 @@ class AppBottomNavigationBar extends StatelessWidget {
       selectedItemColor: Colors.white,
       currentIndex: currentIndex,
       onTap: (index) {
-        // Update the currentIndex directly when an item is tapped
-        // You can add your navigation logic here
         switch (index) {
           case 0:
             Navigator.pushReplacement(
@@ -29,7 +28,7 @@ class AppBottomNavigationBar extends StatelessWidget {
           case 1:
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => ProductRequest()),
+              MaterialPageRoute(builder: (context) => RequisitionListView()),
             );
             break;
           case 2:

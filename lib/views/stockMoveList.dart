@@ -3,10 +3,12 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
 import 'productDetails.dart';
-import 'product.dart';
-import 'drawer_widget.dart';
+import '../Schemas/product.dart';
+import '../widget/drawer_widget.dart';
 import 'package:intl/intl.dart';
-import 'bottom_navigation_bar_widget.dart';
+import '../widget/bottom_navigation_bar_widget.dart';
+import '../DummyData/ProductsDummy.dart';
+import '../DummyData/LocationDummy.dart';
 
 class StockMoveList extends StatefulWidget {
   String selectedFromLocation;
@@ -29,6 +31,7 @@ class _StockMoveListState extends State<StockMoveList> {
   late Timer _timer;
   late Map<int, TextEditingController> _quantityControllers = {};
   List<String> locations = [];
+  late FocusNode _focusNode;
 
   @override
   void initState() {
@@ -38,38 +41,61 @@ class _StockMoveListState extends State<StockMoveList> {
     _loadProducts();
     _startTimer();
     fetchLocations();
+    _focusNode = FocusNode();
   }
 
   @override
   void dispose() {
     _timer.cancel();
-    // Dispose all quantity controllers
-    _quantityControllers.values.forEach((controller) => controller.dispose());
+    _quantityControllers.values
+        .forEach((controller) => controller.dispose());
+    _focusNode.dispose(); // Dispose the focus node
     super.dispose();
   }
 
   void _startTimer() {
     const duration = Duration(seconds: 30);
-    _timer = Timer.periodic(duration, (Timer t) => _loadProducts());
+    _timer = Timer.periodic(duration, (Timer t) {
+      // Check if any text field is focused
+      bool isTextFieldFocused = _quantityControllers.values.any(
+              (controller) =>
+          controller.text.isNotEmpty &&
+              controller.selection.baseOffset != -1 &&
+              _focusNode.hasFocus); // Check if any text field is focused
+      if (!isTextFieldFocused) {
+        _loadProducts();
+      } else {
+        t.cancel(); // Cancel the timer if a text field is focused
+      }
+    });
   }
 
   void _loadProducts() async {
-    final response =
-        await http.get(Uri.parse('http://localhost:3000/products'));
-    if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
-      setState(() {
-        _products = data.map((json) => Product.fromJson(json)).toList();
-        _filteredProducts = List.from(_products); // Initialize filtered list
-        // Initialize quantity controllers for each product
-        _quantityControllers.clear();
-        for (int i = 0; i < _filteredProducts.length; i++) {
-          _quantityControllers[i] = TextEditingController(text: '0');
-        }
-      });
-    } else {
-      throw Exception('Failed to load products');
-    }
+    List<Product> dummyProducts = generateDummyProducts();
+    setState(() {
+      _products = dummyProducts;
+      _filteredProducts = List.from(_products);
+      _quantityControllers = Map.fromIterable(_products,
+          key: (product) => _products.indexOf(product),
+          value: (product) => TextEditingController());
+    });
+    // final response =
+    //     await http.get(Uri.parse('http://172.20.10.8:3000/products'));
+    // if (response.statusCode == 200) {
+    //   final List<dynamic> data = json.decode(response.body);
+    //   setState(() {
+    //     _products = data.map((json) => Product.fromJson(json)).toList();
+    //     _filteredProducts = List.from(_products); // Initialize filtered list
+    //     // Initialize quantity controllers for each product
+    //     _quantityControllers.clear();
+    //     for (int i = 0; i < _filteredProducts.length; i++) {
+    //       _quantityControllers[i] =
+    //           TextEditingController(text: '');
+    //     }
+    //   });
+    // } else {
+    //   throw Exception('Failed to load products');
+    // }
   }
 
   void _filterProducts(String query) {
@@ -90,21 +116,26 @@ class _StockMoveListState extends State<StockMoveList> {
   }
 
   void fetchLocations() async {
-    final response =
-        await http.get(Uri.parse('http://localhost:3000/locations'));
+    // final response =
+    //     await http.get(Uri.parse('http://172.20.10.8:3000/locations'));
+    //
+    // if (response.statusCode == 200) {
+    //   List<dynamic> data = json.decode(response.body);
+    //   List<String> fetchedLocations = [];
+    //   for (var location in data) {
+    //     fetchedLocations.add(location['Name']);
+    //   }
+    //   setState(() {
+    //     locations = fetchedLocations;
+    //   });
+    // } else {
+    //   throw Exception('Failed to fetch locations');
+    // }
+    List<String> dummyLocations = generateDummyLocations();
 
-    if (response.statusCode == 200) {
-      List<dynamic> data = json.decode(response.body);
-      List<String> fetchedLocations = [];
-      for (var location in data) {
-        fetchedLocations.add(location['Name']);
-      }
-      setState(() {
-        locations = fetchedLocations;
-      });
-    } else {
-      throw Exception('Failed to fetch locations');
-    }
+    setState(() {
+      locations = dummyLocations;
+    });
   }
 
   @override
