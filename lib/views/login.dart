@@ -4,13 +4,15 @@ import 'productRequestView.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserPage extends StatelessWidget {
+  const UserPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('User Page'),
+        title: const Text('User Page'),
       ),
-      body: Center(
+      body: const Center(
         child: Text('Welcome User!'),
       ),
     );
@@ -18,13 +20,15 @@ class UserPage extends StatelessWidget {
 }
 
 class AdminPage extends StatelessWidget {
+  const AdminPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Admin Page'),
+        title: const Text('Admin Page'),
       ),
-      body: Center(
+      body: const Center(
         child: Text('Welcome Admin!'),
       ),
     );
@@ -35,6 +39,8 @@ class LoginPage extends StatelessWidget {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
+  LoginPage({super.key});
+
   Future<void> _login(BuildContext context) async {
     String username = usernameController.text;
     String password = passwordController.text;
@@ -43,23 +49,23 @@ class LoginPage extends StatelessWidget {
       _saveLoginStatus(true);
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => RequisitionListView()),
+        MaterialPageRoute(builder: (context) => const RequisitionListView()),
       );
     } else if (username == 'admin' && password == 'admin') {
       _saveLoginStatus(true);
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => AdminPage()),
+        MaterialPageRoute(builder: (context) => const AdminPage()),
       );
     } else if (username == 'user' && password == 'user') {
       _saveLoginStatus(true);
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => ProductRequestCreation()),
+        MaterialPageRoute(builder: (context) => const ProductRequestCreation()),
       );
     } else {
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Unknown user role')));
+          .showSnackBar(const SnackBar(content: Text('Unknown user role')));
     }
   }
 
@@ -79,25 +85,25 @@ class LoginPage extends StatelessWidget {
       future: _checkLoginStatus(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator(); // or any other loading indicator
+          return const CircularProgressIndicator(); // or any other loading indicator
         } else {
           bool isLoggedIn = snapshot.data ?? false;
           if (isLoggedIn) {
             // If user is already logged in, navigate to the appropriate page
-            return RequisitionListView(); // You can replace this with any default page after login
+            return const RequisitionListView(); // You can replace this with any default page after login
           } else {
             // If user is not logged in, show the login page
             return Scaffold(
               appBar: AppBar(
-                title: Text('Login'),
+                title: const Text('Login'),
               ),
               body: Padding(
-                padding: EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Padding(
+                    const Padding(
                       padding: EdgeInsets.all(1),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -115,14 +121,14 @@ class LoginPage extends StatelessWidget {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(
+                            const Text(
                               "BSM",
                               style: TextStyle(
                                   fontSize: 50.0,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.blueAccent),
                             ),
-                            Text(
+                            const Text(
                               "Requisition System",
                               style: TextStyle(
                                   fontSize: 25.0,
@@ -131,15 +137,15 @@ class LoginPage extends StatelessWidget {
                             ),
                             TextField(
                               controller: usernameController,
-                              decoration: InputDecoration(labelText: 'Username'),
+                              decoration: const InputDecoration(labelText: 'Username'),
                             ),
                             TextField(
                               controller: passwordController,
                               obscureText: true,
-                              decoration: InputDecoration(labelText: 'Password'),
+                              decoration: const InputDecoration(labelText: 'Password'),
                             ),
-                            SizedBox(height: 20),
-                            Container(
+                            const SizedBox(height: 20),
+                            SizedBox(
                               width: double.infinity,
                               child: ElevatedButton(
                                 onPressed: () => _login(context),
@@ -147,7 +153,7 @@ class LoginPage extends StatelessWidget {
                                   backgroundColor:
                                   MaterialStateProperty.all<Color>(Colors.blue),
                                 ),
-                                child: Text(
+                                child: const Text(
                                   'Proceed',
                                   style: TextStyle(color: Colors.white),
                                 ),

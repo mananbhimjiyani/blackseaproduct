@@ -1,18 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'dart:async';
 import 'productDetails.dart';
 import '../Schemas/product.dart';
-import '../views/product_list.dart';
-import '../views/stockMove.dart';
-import '../views/stockMoveList.dart';
 import '../widget/drawer_widget.dart';
 import '../widget/bottom_navigation_bar_widget.dart';
-import 'package:intl/intl.dart';
 import '../DummyData/ProductsDummy.dart';
 
 class ProductRequestCreation extends StatefulWidget {
+  const ProductRequestCreation({super.key});
+
   @override
   _ProductRequestCreationState createState() => _ProductRequestCreationState();
 }
@@ -21,7 +17,7 @@ class _ProductRequestCreationState extends State<ProductRequestCreation> {
   late List<Product> _products;
   late List<Product> _filteredProducts;
   late Map<int, TextEditingController> _quantityControllers = {};
-  TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
   late Timer _timer;
   String? _selectedValue;
   late FocusNode _focusNode;
@@ -39,7 +35,9 @@ class _ProductRequestCreationState extends State<ProductRequestCreation> {
   @override
   void dispose() {
     _timer.cancel();
-    _quantityControllers.values.forEach((controller) => controller.dispose());
+    for (var controller in _quantityControllers.values) {
+      controller.dispose();
+    }
     _focusNode.dispose(); // Dispose the focus node
     super.dispose();
   }
@@ -65,9 +63,7 @@ class _ProductRequestCreationState extends State<ProductRequestCreation> {
     setState(() {
       _products = dummyProducts;
       _filteredProducts = List.from(_products);
-      _quantityControllers = Map.fromIterable(_products,
-          key: (product) => _products.indexOf(product),
-          value: (product) => TextEditingController());
+      _quantityControllers = { for (var product in _products) _products.indexOf(product) : TextEditingController() };
     });
     // final response =
     //     await http.get(Uri.parse('http://172.20.10.8:3000/products'));
@@ -106,10 +102,10 @@ class _ProductRequestCreationState extends State<ProductRequestCreation> {
 
   @override
   Widget build(BuildContext context) {
-    late TextEditingController _quantityController =
+    late TextEditingController quantityController =
         TextEditingController(text: '0');
     int quantityRequired = 0;
-    int _currentIndex = 1;
+    int currentIndex = 1;
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -117,7 +113,7 @@ class _ProductRequestCreationState extends State<ProductRequestCreation> {
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
-              icon: Icon(Icons.menu), // Use the menu icon for the drawer
+              icon: const Icon(Icons.menu), // Use the menu icon for the drawer
               onPressed: () {
                 Scaffold.of(context).openDrawer(); // Open the drawer
               },
@@ -126,25 +122,25 @@ class _ProductRequestCreationState extends State<ProductRequestCreation> {
         ),
         title: Row(
           children: [
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             // Add space between the menu icon and the logo
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: Image.asset(
                 'assets/images/appbar.png',
                 height: 40,
               ),
             ),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             // Add space between the logo and the product list title
-            Text('Request Creation',
+            const Text('Request Creation',
                 style:
                     TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)),
           ],
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.search),
+            icon: const Icon(Icons.search),
             onPressed: () {
               showSearch(
                 context: context,
@@ -155,9 +151,9 @@ class _ProductRequestCreationState extends State<ProductRequestCreation> {
           ),
         ],
       ),
-      drawer: AppDrawer(),
+      drawer: const AppDrawer(),
       body: _filteredProducts.isEmpty
-          ? Center(
+          ? const Center(
               child: Text('No products available'),
             )
           : Column(
@@ -224,7 +220,7 @@ class _ProductRequestCreationState extends State<ProductRequestCreation> {
                 //   ),
                 // ),
                 Flexible(
-                  child: Container(
+                  child: SizedBox(
                     height: MediaQuery.of(context).size.height * 1,
                     child: ListView.builder(
                       itemCount: _filteredProducts.length,
@@ -236,7 +232,7 @@ class _ProductRequestCreationState extends State<ProductRequestCreation> {
                             _navigateToProductDetails(product);
                           },
                           child: ListTile(
-                            contentPadding: EdgeInsets.symmetric(
+                            contentPadding: const EdgeInsets.symmetric(
                                 vertical: 10, horizontal: 16),
                             // Adjust padding as needed
                             leading: product.productImage1 != null &&
@@ -247,14 +243,13 @@ class _ProductRequestCreationState extends State<ProductRequestCreation> {
                                     height: 80, // Increase image height
                                     fit: BoxFit.cover,
                                   )
-                                : Icon(Icons.image,
+                                : const Icon(Icons.image,
                                     size: 80, color: Colors.grey),
                             // Display disabled icon
                             title: Text(
                               product.productName.isNotEmpty
                                   ? (product.productName.length > 20
-                                      ? product.productName.substring(0, 20) +
-                                          "..."
+                                      ? "${product.productName.substring(0, 20)}..."
                                       : product.productName)
                                   : 'Product Name Unavailable',
                               style: TextStyle(
@@ -270,16 +265,16 @@ class _ProductRequestCreationState extends State<ProductRequestCreation> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  product.eachUnitContains + ' ' + product.unit,
-                                  style: TextStyle(
+                                  '${product.eachUnitContains} ${product.unit}',
+                                  style: const TextStyle(
                                     fontSize: 12,
                                   ),
                                 ),
                                 Text(
                                   product.brand.isNotEmpty
-                                      ? '${product.brand}'
+                                      ? product.brand
                                       : 'Generic',
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 12,
                                   ),
                                 ),
@@ -295,7 +290,7 @@ class _ProductRequestCreationState extends State<ProductRequestCreation> {
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     IconButton(
-                                      icon: Icon(
+                                      icon: const Icon(
                                         Icons.remove,
                                         color: Colors.red,
                                       ),
@@ -314,14 +309,14 @@ class _ProductRequestCreationState extends State<ProductRequestCreation> {
                                         }
                                       },
                                     ),
-                                    SizedBox(width: 4),
-                                    Container(
+                                    const SizedBox(width: 4),
+                                    SizedBox(
                                       width: 50,
                                       child: TextFormField(
                                         controller: _quantityControllers[index],
                                         keyboardType: TextInputType.number,
                                         textAlign: TextAlign.center,
-                                        decoration: InputDecoration(
+                                        decoration: const InputDecoration(
                                           border: OutlineInputBorder(),
                                         ),
                                         onChanged: (value) {
@@ -332,9 +327,9 @@ class _ProductRequestCreationState extends State<ProductRequestCreation> {
                                         },
                                       ),
                                     ),
-                                    SizedBox(width: 4),
+                                    const SizedBox(width: 4),
                                     IconButton(
-                                      icon: Icon(
+                                      icon: const Icon(
                                         Icons.add,
                                         color: Colors.green,
                                       ),
@@ -352,7 +347,7 @@ class _ProductRequestCreationState extends State<ProductRequestCreation> {
                                     ),
                                   ],
                                 ),
-                                SizedBox(height: 8),
+                                const SizedBox(height: 8),
                               ],
                             ),
                           ),
@@ -368,23 +363,23 @@ class _ProductRequestCreationState extends State<ProductRequestCreation> {
               onPressed: () {
                 // Action when other values are selected
               },
-              child: Icon(
+              backgroundColor: Colors.blue,
+              child: const Icon(
                 Icons.add,
                 color: Colors.white,
               ),
-              backgroundColor: Colors.blue,
             )
           : FloatingActionButton(
               onPressed: () {
                 // Action when 'Create New Request' is selected
               },
-              child: Icon(
+              backgroundColor: Colors.green,
+              child: const Icon(
                 Icons.check,
                 color: Colors.white,
               ),
-              backgroundColor: Colors.green,
             ),
-      bottomNavigationBar: AppBottomNavigationBar(currentIndex: _currentIndex),
+      bottomNavigationBar: AppBottomNavigationBar(currentIndex: currentIndex),
     );
   }
 }
@@ -401,7 +396,7 @@ class _ProductSearchDelegate extends SearchDelegate<String> {
   List<Widget> buildActions(BuildContext context) {
     return [
       IconButton(
-        icon: Icon(Icons.clear),
+        icon: const Icon(Icons.clear),
         onPressed: () {
           query = '';
           filterCallback(query);
@@ -413,7 +408,7 @@ class _ProductSearchDelegate extends SearchDelegate<String> {
   @override
   Widget buildLeading(BuildContext context) {
     return IconButton(
-      icon: Icon(Icons.arrow_back),
+      icon: const Icon(Icons.arrow_back),
       onPressed: () {
         close(context, '');
       },
