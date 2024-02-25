@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import '../views/product_list.dart';
-import '../views/productRequestCreation.dart';
 import '../views/stockMove.dart';
 import '../views/productRequestView.dart';
 
 class AppBottomNavigationBar extends StatelessWidget {
   final int currentIndex;
 
-  AppBottomNavigationBar({
+  const AppBottomNavigationBar({super.key, 
     required this.currentIndex,
   });
 
@@ -22,19 +21,19 @@ class AppBottomNavigationBar extends StatelessWidget {
           case 0:
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => ProductList()),
+              MaterialPageRoute(builder: (context) => const ProductList()),
             );
             break;
           case 1:
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => RequisitionListView()),
+              MaterialPageRoute(builder: (context) => const RequisitionListView()),
             );
             break;
           case 2:
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => StockMove()),
+              MaterialPageRoute(builder: (context) => const StockMove()),
             );
             break;
         }

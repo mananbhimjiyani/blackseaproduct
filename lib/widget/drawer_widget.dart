@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import '../Schemas/product.dart';
 import '../views/product_list.dart';
 import '../views/productRequestCreation.dart';
 import '../views/stockMove.dart';
-import '../views/productRequestCreation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../views/login.dart';
 
 class AppDrawer extends StatelessWidget {
+  const AppDrawer({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -17,14 +17,14 @@ class AppDrawer extends StatelessWidget {
             child: ListView(
               padding: EdgeInsets.zero,
               children: [
-                UserAccountsDrawerHeader(
+                const UserAccountsDrawerHeader(
                   currentAccountPicture: CircleAvatar(
                     backgroundColor: Colors.white,
                     // Set background color for avatar
                     child: Icon(
                       Icons.person,
                       color: Colors.blue, // Set color for icon
-                      size: 64, // Set size for icon
+                      size: 60, // Set size for icon
                     ),
                   ),
                   accountName: Row(
@@ -59,40 +59,45 @@ class AppDrawer extends StatelessWidget {
                   ),
                 ),
                 ListTile(
-                  title: Text('Product'),
+                  leading: const Icon(Icons.list),
+                  title: const Text('Product'),
                   onTap: () {
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => ProductList()),
+                      MaterialPageRoute(builder: (context) => const ProductList()),
                     );
                   },
                 ),
                 ListTile(
-                  title: Text('Purchase Requisition'),
+                  leading: const Icon(Icons.format_list_bulleted_add),
+                  title: const Text('Purchase Requisition'),
                   onTap: () {
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => ProductRequestCreation()),
+                      MaterialPageRoute(builder: (context) => const ProductRequestCreation()),
                     );
                   },
                 ),
                 ListTile(
-                  title: Text('Stock Move'),
+                  leading: const Icon(Icons.move_down_rounded),
+                  title: const Text('Stock Move'),
                   onTap: () {
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => StockMove()),
+                      MaterialPageRoute(builder: (context) => const StockMove()),
                     );
                   },
                 ),
                 ListTile(
-                  title: Text('User'),
+                  leading: const Icon(Icons.person),
+                  title: const Text('User'),
                   onTap: () {
                     // Handle menu item 2 tap
                   },
                 ),
                 ListTile(
-                  title: Text('About This App'),
+                  leading: const Icon(Icons.info),
+                  title: const Text('About This App'),
                   onTap: () {
                     // Handle menu item 2 tap
                   },
@@ -101,13 +106,13 @@ class AppDrawer extends StatelessWidget {
             ),
           ),
           ListTile(
-            title: Text('Logout'),
+            title: const Text('Logout'),
             onTap: () {
               _logout(context);
             },
-            trailing: Icon(Icons.exit_to_app),
+            trailing: const Icon(Icons.exit_to_app),
           ),
-          SizedBox(height: 20,)
+          const SizedBox(height: 20,)
         ],
       ),
     );

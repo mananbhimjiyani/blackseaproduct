@@ -472,18 +472,17 @@
 
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import '../Schemas/requisition.dart'; // Import the Requisition class
 import '../DummyData/RequisitionDummy.dart'; // Update the path according to your file structure
 import '../widget/drawer_widget.dart';
 import '../widget/bottom_navigation_bar_widget.dart';
 import '../Schemas/product.dart';
-import '../DummyData/ProductsDummy.dart';
 import '../views/productDetails.dart';
 import '../views/RequisitionDetailsView.dart';
 
 class RequisitionListView extends StatefulWidget {
+  const RequisitionListView({super.key});
+
   @override
   _RequisitionListViewState createState() => _RequisitionListViewState();
 }
@@ -521,7 +520,7 @@ class _RequisitionListViewState extends State<RequisitionListView> {
         shape: BoxShape.circle,
         color: color,
       ),
-      margin: EdgeInsets.only(right: 8),
+      margin: const EdgeInsets.only(right: 8),
     );
   }
 
@@ -552,9 +551,7 @@ class _RequisitionListViewState extends State<RequisitionListView> {
     setState(() {
       _requisitions = dummyRequisitions;
       _filteredRequisitions = List.from(_requisitions);
-      _quantityControllers = Map.fromIterable(_requisitions,
-          key: (requisition) => _requisitions.indexOf(requisition),
-          value: (requisition) => TextEditingController());
+      _quantityControllers = { for (var requisition in _requisitions) _requisitions.indexOf(requisition) : TextEditingController() };
     });
   }
 
@@ -576,8 +573,8 @@ class _RequisitionListViewState extends State<RequisitionListView> {
     );
   }
 
-  int _currentIndex = 1;
-  Offset _offset = Offset(0, double.infinity);
+  final int _currentIndex = 1;
+  Offset _offset = const Offset(0, double.infinity);
 
   @override
   Widget build(BuildContext context) {
@@ -587,7 +584,7 @@ class _RequisitionListViewState extends State<RequisitionListView> {
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
-              icon: Icon(Icons.menu), // Use the menu icon for the drawer
+              icon: const Icon(Icons.menu), // Use the menu icon for the drawer
               onPressed: () {
                 Scaffold.of(context).openDrawer(); // Open the drawer
               },
@@ -596,10 +593,10 @@ class _RequisitionListViewState extends State<RequisitionListView> {
         ),
         title: Row(
           children: [
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             // Add space between the menu icon and the logo
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: SizedBox(
                 height: 40,
                 width: 40, // Specify the desired width
@@ -609,14 +606,14 @@ class _RequisitionListViewState extends State<RequisitionListView> {
                 ),
               ),
             ),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             // Add space between the logo and the product list title
-            Text('List'),
+            const Text('Requisition List'),
           ],
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.search),
+            icon: const Icon(Icons.search),
             onPressed: () {
               showSearch(
                 context: context,
@@ -630,9 +627,9 @@ class _RequisitionListViewState extends State<RequisitionListView> {
           ),
         ],
       ),
-      drawer: AppDrawer(),
+      drawer: const AppDrawer(),
       body: _filteredRequisitions.isEmpty
-          ? Center(
+          ? const Center(
               child: Text('No requisitions available'),
             )
           : ListView.builder(
@@ -644,7 +641,7 @@ class _RequisitionListViewState extends State<RequisitionListView> {
                     children: [
                       Text(
                         'Req ID: ${requisition.reqID}',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -654,24 +651,24 @@ class _RequisitionListViewState extends State<RequisitionListView> {
                     children: [
                       if (requisition.status ==
                           'Delivered') // Show approved text if status is Approved
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
+                        const Padding(
+                          padding: EdgeInsets.only(left: 8.0),
                           child: Text(
                             'Delivered',
                             style: TextStyle(color: Colors.green, fontSize: 20),
                           ),
                         ),
                       if (requisition.status == 'Out for Delivery')
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
+                        const Padding(
+                          padding: EdgeInsets.only(left: 8.0),
                           child: Text(
                             'Out for Delivery',
                             style: TextStyle(color: Colors.brown, fontSize: 20),
                           ),
                         ),
                       if (requisition.status == 'Order Placed')
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
+                        const Padding(
+                          padding: EdgeInsets.only(left: 8.0),
                           child: Text(
                             'Order Placed',
                             style: TextStyle(color: Colors.brown, fontSize: 20),
@@ -682,27 +679,27 @@ class _RequisitionListViewState extends State<RequisitionListView> {
                           if (requisition.status != 'Order Placed') ...[
                             _buildStatusIndicator(requisition.status),
                             IconButton(
-                              icon: Icon(Icons.check),
+                              icon: const Icon(Icons.check),
                               onPressed: () {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
+                                  const SnackBar(
                                     content: Text('Requisition approved'),
                                   ),
                                 );
                               },
                             ),
                             IconButton(
-                              icon: Icon(Icons.close),
+                              icon: const Icon(Icons.close),
                               onPressed: () {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
+                                  const SnackBar(
                                     content: Text('Requisition Rejected'),
                                   ),
                                 );
                               },
                             ),
                             IconButton(
-                              icon: Icon(Icons.edit),
+                              icon: const Icon(Icons.edit),
                               onPressed: () {
                                 // Handle edit action
                               },
@@ -742,12 +739,7 @@ class _RequisitionListViewState extends State<RequisitionListView> {
               feedback: FloatingActionButton(
                 onPressed: () {},
                 backgroundColor: Colors.blue,
-                child: Icon(Icons.add, color: Colors.white,),
-              ),
-              child: FloatingActionButton(
-                onPressed: () {},
-                backgroundColor: Colors.blue,
-                child: Icon(Icons.add ,color: Colors.white,),
+                child: const Icon(Icons.add, color: Colors.white,),
               ),
               onDraggableCanceled: (velocity, offset) {
                 setState(() {
@@ -755,6 +747,11 @@ class _RequisitionListViewState extends State<RequisitionListView> {
                 });
               },
               childWhenDragging: Container(),
+              child: FloatingActionButton(
+                onPressed: () {},
+                backgroundColor: Colors.blue,
+                child: const Icon(Icons.add ,color: Colors.white,),
+              ),
             ),
           ),
         ],
@@ -781,7 +778,7 @@ class _RequisitionSearchDelegate extends SearchDelegate<String> {
   List<Widget> buildActions(BuildContext context) {
     return [
       IconButton(
-        icon: Icon(Icons.clear),
+        icon: const Icon(Icons.clear),
         onPressed: () {
           query = '';
           filterCallback(query);
@@ -793,7 +790,7 @@ class _RequisitionSearchDelegate extends SearchDelegate<String> {
   @override
   Widget buildLeading(BuildContext context) {
     return IconButton(
-      icon: Icon(Icons.arrow_back),
+      icon: const Icon(Icons.arrow_back),
       onPressed: () {
         close(context, '');
       },
@@ -816,7 +813,7 @@ class _RequisitionSearchDelegate extends SearchDelegate<String> {
         return ListTile(
           title: Text(
             'Req ID: ${requisition.reqID}',
-            style: TextStyle(
+            style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 20,
             ),
@@ -826,27 +823,27 @@ class _RequisitionSearchDelegate extends SearchDelegate<String> {
             mainAxisSize: MainAxisSize.min,
             children: [
               IconButton(
-                icon: Icon(Icons.check),
+                icon: const Icon(Icons.check),
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
+                    const SnackBar(
                       content: Text('Requisition approved'),
                     ),
                   );
                 },
               ),
               IconButton(
-                icon: Icon(Icons.close),
+                icon: const Icon(Icons.close),
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
+                    const SnackBar(
                       content: Text('Requisition rejected'),
                     ),
                   );
                 },
               ),
               IconButton(
-                icon: Icon(Icons.edit),
+                icon: const Icon(Icons.edit),
                 onPressed: () {
                   // Handle edit action
                 },
@@ -882,27 +879,27 @@ class _RequisitionSearchDelegate extends SearchDelegate<String> {
             mainAxisSize: MainAxisSize.min,
             children: [
               IconButton(
-                icon: Icon(Icons.check),
+                icon: const Icon(Icons.check),
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
+                    const SnackBar(
                       content: Text('Requisition approved'),
                     ),
                   );
                 },
               ),
               IconButton(
-                icon: Icon(Icons.close),
+                icon: const Icon(Icons.close),
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
+                    const SnackBar(
                       content: Text('Requisition rejected'),
                     ),
                   );
                 },
               ),
               IconButton(
-                icon: Icon(Icons.edit),
+                icon: const Icon(Icons.edit),
                 onPressed: () {
                   // Handle edit action
                 },

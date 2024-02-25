@@ -6,16 +6,16 @@ import '../Schemas/requisition.dart'; // Import the Requisition class
 class RequisitionDetailsView extends StatelessWidget {
   final Requisition requisition;
 
-  const RequisitionDetailsView({Key? key, required this.requisition}) : super(key: key);
+  const RequisitionDetailsView({super.key, required this.requisition});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Requisition Details'),
+        title: const Text('Requisition Details'),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'stockMoveList.dart';
 import '../widget/drawer_widget.dart';
 import '../widget/bottom_navigation_bar_widget.dart';
 import '../DummyData/LocationDummy.dart';
 
 class StockMove extends StatefulWidget {
+  const StockMove({super.key});
+
   @override
   _StockMoveState createState() => _StockMoveState();
 }
@@ -15,7 +15,7 @@ class _StockMoveState extends State<StockMove> {
   String? selectedFromLocation;
   String? selectedToLocation;
   List<String> locations = [];
-  int _currentIndex = 2;
+  final int _currentIndex = 2;
 
   late Widget destinationScreen;
 
@@ -68,7 +68,7 @@ class _StockMoveState extends State<StockMove> {
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
-              icon: Icon(Icons.menu),
+              icon: const Icon(Icons.menu),
               onPressed: () {
                 Scaffold.of(context).openDrawer();
               },
@@ -77,28 +77,28 @@ class _StockMoveState extends State<StockMove> {
         ),
         title: Row(
           children: [
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             // Add space between the menu icon and the logo
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: Image.asset(
                 'assets/images/appbar.png',
                 height: 40,
               ),
             ),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             // Add space between the logo and the product list title
-            Text('Location',style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)),
+            const Text('Location',style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)),
           ],
         ),
       ),
-      drawer: AppDrawer(),
+      drawer: const AppDrawer(),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             DropdownButton<String>(
-              hint: Text('From Location'),
+              hint: const Text('From Location'),
               value: selectedFromLocation,
               onChanged: (String? newValue) {
                 setState(() {
@@ -117,7 +117,7 @@ class _StockMoveState extends State<StockMove> {
             ),
             if (selectedFromLocation != null)
               DropdownButton<String>(
-                hint: Text('To Location'),
+                hint: const Text('To Location'),
                 value: selectedToLocation,
                 onChanged: (String? newValue) {
                   setState(() {
@@ -136,13 +136,13 @@ class _StockMoveState extends State<StockMove> {
               ),
             ElevatedButton(
               onPressed: navigateToStoreMoveList,
-              child: Text('Continue',
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.blue),
+              ),
+              child: const Text('Continue',
                 style: TextStyle(
                   color: Colors.white
                 ),
-              ),
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(Colors.blue),
               ),
             ),
           ],

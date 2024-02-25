@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'dart:async';
 import 'productDetails.dart';
 import '../Schemas/product.dart';
 import '../widget/drawer_widget.dart';
-import 'package:intl/intl.dart';
 import '../widget/bottom_navigation_bar_widget.dart';
 import '../DummyData/ProductsDummy.dart';
 import '../DummyData/LocationDummy.dart';
@@ -14,7 +11,7 @@ class StockMoveList extends StatefulWidget {
   String selectedFromLocation;
   String selectedToLocation;
 
-  StockMoveList({
+  StockMoveList({super.key, 
     required this.selectedFromLocation,
     required this.selectedToLocation,
   });
@@ -24,10 +21,10 @@ class StockMoveList extends StatefulWidget {
 }
 
 class _StockMoveListState extends State<StockMoveList> {
-  int _currentIndex = 2;
+  final int _currentIndex = 2;
   late List<Product> _products;
   late List<Product> _filteredProducts;
-  TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
   late Timer _timer;
   late Map<int, TextEditingController> _quantityControllers = {};
   List<String> locations = [];
@@ -47,8 +44,9 @@ class _StockMoveListState extends State<StockMoveList> {
   @override
   void dispose() {
     _timer.cancel();
-    _quantityControllers.values
-        .forEach((controller) => controller.dispose());
+    for (var controller in _quantityControllers.values) {
+      controller.dispose();
+    }
     _focusNode.dispose(); // Dispose the focus node
     super.dispose();
   }
@@ -75,9 +73,7 @@ class _StockMoveListState extends State<StockMoveList> {
     setState(() {
       _products = dummyProducts;
       _filteredProducts = List.from(_products);
-      _quantityControllers = Map.fromIterable(_products,
-          key: (product) => _products.indexOf(product),
-          value: (product) => TextEditingController());
+      _quantityControllers = { for (var product in _products) _products.indexOf(product) : TextEditingController() };
     });
     // final response =
     //     await http.get(Uri.parse('http://172.20.10.8:3000/products'));
@@ -147,7 +143,7 @@ class _StockMoveListState extends State<StockMoveList> {
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
-              icon: Icon(Icons.menu), // Use the menu icon for the drawer
+              icon: const Icon(Icons.menu), // Use the menu icon for the drawer
               onPressed: () {
                 Scaffold.of(context).openDrawer(); // Open the drawer
               },
@@ -161,25 +157,25 @@ class _StockMoveListState extends State<StockMoveList> {
               children: [
                 Row(
                   children: [
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                     // Add space between the menu icon and the logo
                     Padding(
-                      padding: EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(8.0),
                       child: Image.asset(
                         'assets/images/appbar.png',
                         height: 40,
                       ),
                     ),
-                    SizedBox(width: 30),
+                    const SizedBox(width: 30),
                     // Add space between the logo and the product list title
-                    Text(
+                    const Text(
                       'Stock Move',
                       style: TextStyle(
                           color: Colors.blue, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 // Add space between the title and locations
               ],
             ),
@@ -187,7 +183,7 @@ class _StockMoveListState extends State<StockMoveList> {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.search),
+            icon: const Icon(Icons.search),
             onPressed: () {
               showSearch(
                 context: context,
@@ -198,22 +194,22 @@ class _StockMoveListState extends State<StockMoveList> {
           ),
         ],
       ),
-      drawer: AppDrawer(),
+      drawer: const AppDrawer(),
       body: _filteredProducts.isEmpty
-          ? Center(
+          ? const Center(
               child: Text('No products available'),
             )
           : Column(
               children: [
                 Container(
                   color: Colors.grey.shade300, // Set backdrop color
-                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       DropdownButton<String>(
-                        hint: Text('From Location'),
+                        hint: const Text('From Location'),
                         value: widget.selectedFromLocation,
                         // Accessing from widget property
                         onChanged: (String? newValue) {
@@ -235,14 +231,14 @@ class _StockMoveListState extends State<StockMoveList> {
                             )
                             .toList(),
                       ),
-                      SizedBox(width: 8),
-                      Icon(
+                      const SizedBox(width: 8),
+                      const Icon(
                         Icons.arrow_circle_right_outlined,
                         size: 35,
                       ),
-                      SizedBox(width: 8),
+                      const SizedBox(width: 8),
                       DropdownButton<String>(
-                        hint: Text('To Location'),
+                        hint: const Text('To Location'),
                         value: widget.selectedToLocation,
                         // Accessing from widget property
                         onChanged: (String? newValue) {
@@ -278,7 +274,7 @@ class _StockMoveListState extends State<StockMoveList> {
                           _navigateToProductDetails(product);
                         },
                         child: ListTile(
-                          contentPadding: EdgeInsets.symmetric(
+                          contentPadding: const EdgeInsets.symmetric(
                               vertical: 10, horizontal: 16),
                           leading: product.productImage1 != null &&
                                   product.productImage1!.isNotEmpty
@@ -288,12 +284,11 @@ class _StockMoveListState extends State<StockMoveList> {
                                   height: 80,
                                   fit: BoxFit.cover,
                                 )
-                              : Icon(Icons.image, size: 80, color: Colors.grey),
+                              : const Icon(Icons.image, size: 80, color: Colors.grey),
                           title: Text(
                             product.productName.isNotEmpty
                                 ? (product.productName.length > 20
-                                    ? product.productName.substring(0, 20) +
-                                        "..."
+                                    ? "${product.productName.substring(0, 20)}..."
                                     : product.productName)
                                 : 'Product Name Unavailable',
                             style: TextStyle(
@@ -309,8 +304,8 @@ class _StockMoveListState extends State<StockMoveList> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                product.eachUnitContains + ' ' + product.unit,
-                                style: TextStyle(
+                                '${product.eachUnitContains} ${product.unit}',
+                                style: const TextStyle(
                                   fontSize: 12,
                                 ),
                               ),
@@ -318,9 +313,9 @@ class _StockMoveListState extends State<StockMoveList> {
                                 product.brand.isNotEmpty
                                     ? (product.brand.length > 18
                                         ? '${product.brand.substring(0, 18)}...'
-                                        : '${product.brand}')
+                                        : product.brand)
                                     : 'Generic',
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 12,
                                 ),
                               ),
@@ -333,7 +328,7 @@ class _StockMoveListState extends State<StockMoveList> {
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   IconButton(
-                                    icon: Icon(
+                                    icon: const Icon(
                                       Icons.remove,
                                       color: Colors.red,
                                     ),
@@ -351,14 +346,14 @@ class _StockMoveListState extends State<StockMoveList> {
                                       }
                                     },
                                   ),
-                                  SizedBox(width: 4),
-                                  Container(
+                                  const SizedBox(width: 4),
+                                  SizedBox(
                                     width: 50,
                                     child: TextFormField(
                                       controller: _quantityControllers[index],
                                       keyboardType: TextInputType.number,
                                       textAlign: TextAlign.center,
-                                      decoration: InputDecoration(
+                                      decoration: const InputDecoration(
                                         border: OutlineInputBorder(),
                                       ),
                                       onChanged: (value) {
@@ -370,9 +365,9 @@ class _StockMoveListState extends State<StockMoveList> {
                                       },
                                     ),
                                   ),
-                                  SizedBox(width: 4),
+                                  const SizedBox(width: 4),
                                   IconButton(
-                                    icon: Icon(
+                                    icon: const Icon(
                                       Icons.add,
                                       color: Colors.green,
                                     ),
@@ -390,7 +385,7 @@ class _StockMoveListState extends State<StockMoveList> {
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 8),
+                              const SizedBox(height: 8),
                             ],
                           ),
                         ),
@@ -401,12 +396,12 @@ class _StockMoveListState extends State<StockMoveList> {
               ],
             ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(
+        backgroundColor: Colors.green,
+        onPressed: () {},
+        child: const Icon(
           Icons.check,
           color: Colors.white,
         ),
-        backgroundColor: Colors.green,
-        onPressed: () {},
       ),
       bottomNavigationBar: AppBottomNavigationBar(currentIndex: _currentIndex),
     );
@@ -425,7 +420,7 @@ class _ProductSearchDelegate extends SearchDelegate<String> {
   List<Widget> buildActions(BuildContext context) {
     return [
       IconButton(
-        icon: Icon(Icons.clear),
+        icon: const Icon(Icons.clear),
         onPressed: () {
           query = '';
           filterCallback(query);
@@ -437,7 +432,7 @@ class _ProductSearchDelegate extends SearchDelegate<String> {
   @override
   Widget buildLeading(BuildContext context) {
     return IconButton(
-      icon: Icon(Icons.arrow_back),
+      icon: const Icon(Icons.arrow_back),
       onPressed: () {
         close(context, '');
       },
