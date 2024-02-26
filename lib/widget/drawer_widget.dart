@@ -1,15 +1,26 @@
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+
 import 'package:flutter/material.dart';
 import '../views/product_list.dart';
 import '../views/productRequestCreation.dart';
 import '../views/stockMove.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../views/login.dart';
+import '../views/user_details.dart'; // Import UserDetails
+import 'package:blackseaproduct/Schemas/user.dart';
 
 class AppDrawer extends StatelessWidget {
-  const AppDrawer({super.key});
+  const AppDrawer({Key? key});
 
   @override
   Widget build(BuildContext context) {
+    User user = User(
+      userID: 0,
+      userName: '',
+      jobTitle: '',
+      email: '',
+    );
+
     return Drawer(
       child: Column(
         children: [
@@ -17,41 +28,67 @@ class AppDrawer extends StatelessWidget {
             child: ListView(
               padding: EdgeInsets.zero,
               children: [
-                const UserAccountsDrawerHeader(
-                  currentAccountPicture: CircleAvatar(
-                    backgroundColor: Colors.white,
-                    // Set background color for avatar
-                    child: Icon(
-                      Icons.person,
-                      color: Colors.blue, // Set color for icon
-                      size: 60, // Set size for icon
+                UserAccountsDrawerHeader(
+                  currentAccountPicture: GestureDetector(
+                    onTap: () {
+                      // Navigate to UserDetails when profile picture is tapped
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => UserDetails(requisitions: [], user: user)),
+                      );
+                    },
+                    child: CircleAvatar(
+                      backgroundColor: Colors.white,
+                      child: Icon(
+                        Icons.person,
+                        color: Colors.blue,
+                        size: 60,
+                      ),
                     ),
                   ),
-                  accountName: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        'John Doe', // Replace with actual user name
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white, // Set color for name
+                  accountName: GestureDetector(
+                    onTap: () {
+                      // Navigate to UserDetails when account name is tapped
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => UserDetails(requisitions: [], user: user)),
+                      );
+                    },
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          user.userName ?? '',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
                         ),
-                      ),
-                      SizedBox(width: 8), // Adding some space between name and rank
-                      Text(
-                        'Major', // Replace with actual rank
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.white, // Set color for rank
+                        SizedBox(width: 8),
+                        Text(
+                          user.jobTitle ?? '',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                  accountEmail: Text(
-                    'john.doe@example.com', // Replace with actual user email
-                    style: TextStyle(
-                      color: Colors.white, // Set color for email
+                  accountEmail: GestureDetector(
+                    onTap: () {
+                      // Navigate to UserDetails when account email is tapped
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => UserDetails(requisitions: [], user: user)),
+                      );
+                    },
+                    child: Text(
+                      user.email ?? '',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                   decoration: BoxDecoration(
@@ -92,7 +129,10 @@ class AppDrawer extends StatelessWidget {
                   leading: const Icon(Icons.person),
                   title: const Text('User'),
                   onTap: () {
-                    // Handle menu item 2 tap
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => UserDetails(requisitions: [], user: user)),
+                    );
                   },
                 ),
                 ListTile(
