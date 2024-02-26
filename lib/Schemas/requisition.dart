@@ -8,11 +8,13 @@ class Requisition {
   final String userRemarks;
   final String approver;
   final String approverRemarks;
-  final String status;
+  String status;
   final String procurementRemarks;
   final DateTime? procurementCompletedOn;
   final DateTime? closureDate;
   final String powerAppsId;
+  String productName; // Add this line for the productName field
+  int quantity; // Add this line for the quantity field
 
   Requisition({
     required this.reqID,
@@ -28,6 +30,8 @@ class Requisition {
     this.procurementCompletedOn,
     this.closureDate,
     required this.powerAppsId,
+    required this.productName, 
+    required this.quantity, 
   });
 
   factory Requisition.fromJson(Map<String, dynamic> json) {
@@ -49,6 +53,9 @@ class Requisition {
       procurementCompletedOn: json['procurementCompletedOn'] != null ? DateTime.parse(json['procurementCompletedOn']) : null,
       closureDate: json['closureDate'] != null ? DateTime.parse(json['closureDate']) : null,
       powerAppsId: json['powerAppsId'] ?? '',
+      productName: json['productName'] ?? '', 
+      quantity: json['quantity'] ?? 0, 
+      
     );
   }
 }

@@ -6,8 +6,7 @@
 // import 'Schemas/product.dart';
 // import 'product_list.dart';
 // import 'stockMove.dart';
-// import 'stockMoveList.dart';
-// import 'widget/drawer_widget.dart';
+// import 'stockMoveList./drawer_widget.dart';
 // import 'widget/bottom_navigation_bar_widget.dart';
 // import 'package:intl/intl.dart';
 // import 'DummyData/ProductsDummy.dart';
@@ -469,16 +468,19 @@
 //   }
 // }
 //
+// ignore_for_file: prefer_for_elements_to_map_fromiterable
 
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../Schemas/requisition.dart'; // Import the Requisition class
-import '../DummyData/RequisitionDummy.dart'; // Update the path according to your file structure
 import '../widget/drawer_widget.dart';
 import '../widget/bottom_navigation_bar_widget.dart';
 import '../Schemas/product.dart';
 import '../views/productDetails.dart';
 import '../views/RequisitionDetailsView.dart';
+import 'package:blackseaproduct/views/productRequestCreation.dart';
 
 class RequisitionListView extends StatefulWidget {
   const RequisitionListView({super.key});
@@ -503,10 +505,7 @@ class _RequisitionListViewState extends State<RequisitionListView> {
       case 'Approved':
         color = Colors.green;
         break;
-      case 'On Hold':
-        color = Colors.redAccent;
-        break;
-      case 'WIP':
+      case 'Rejected':
         color = Colors.red;
         break;
       default:
@@ -533,6 +532,18 @@ class _RequisitionListViewState extends State<RequisitionListView> {
     _searchController = TextEditingController();
     _loadRequisitions();
     _startTimer();
+
+    @override
+    void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // Retrieve the data passed back from ProductRequestCreation page
+    final requestData = ModalRoute.of(context)?.settings.arguments;
+    if (requestData != null) {
+      // Process the received data as needed
+      print('Received request data: $requestData');
+    }
+  }
   }
 
   @override
@@ -547,12 +558,28 @@ class _RequisitionListViewState extends State<RequisitionListView> {
   }
 
   void _loadRequisitions() async {
-    List<Requisition> dummyRequisitions = generateDummyRequisitions();
-    setState(() {
-      _requisitions = dummyRequisitions;
-      _filteredRequisitions = List.from(_requisitions);
-      _quantityControllers = { for (var requisition in _requisitions) _requisitions.indexOf(requisition) : TextEditingController() };
-    });
+    // List<Requisition> dummyRequisitions = generateDummyRequisitions();
+    // setState(() {
+    //   _requisitions = dummyRequisitions;
+    //   _filteredRequisitions = List.from(_requisitions);
+    //   _quantityControllers = { for (var requisition in _requisitions) _requisitions.indexOf(requisition) : TextEditingController() };
+    // });
+
+    final response =
+        await http.get(Uri.parse('http://172.20.10.8:3000/requisition'));
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      setState(() {
+        _requisitions = data.map((json) => Requisition.fromJson(json)).toList();
+        _filteredRequisitions = List.from(_requisitions); // Initialize filtered list
+        // Initialize quantity controllers
+        _quantityControllers = Map.fromIterable(_requisitions,
+            key: (product) => _requisitions.indexOf(product),
+            value: (product) => TextEditingController());
+      });
+    } else {
+      throw Exception('Failed to load products');
+    }
   }
 
   void _filterRequisitions(String query) {
@@ -572,6 +599,30 @@ class _RequisitionListViewState extends State<RequisitionListView> {
       ),
     );
   }
+
+  void _acceptRequisition(Requisition requisition) {
+  // Handle accepting requisition logic
+  // You can store the status or update the requisition object
+  setState(() {
+    requisition.status = 'Accepted';
+  });
+}
+
+  void _rejectRequisition(Requisition requisition) {
+  // Handle rejecting requisition logic
+  // You can store the status or update the requisition object
+  setState(() {
+    requisition.status = 'Rejected';
+  });
+}
+
+  void _setStatusPending(Requisition requisition) {
+  // Handle setting status to pending logic
+  // You can store the status or update the requisition object
+  setState(() {
+    requisition.status = 'Pending';
+  });
+}
 
   final int _currentIndex = 1;
   Offset _offset = const Offset(0, double.infinity);
@@ -683,9 +734,10 @@ class _RequisitionListViewState extends State<RequisitionListView> {
                               onPressed: () {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                    content: Text('Requisition approved'),
+                                    content: Text('Requisition Accepted'),
                                   ),
                                 );
+                                _acceptRequisition(requisition);
                               },
                             ),
                             IconButton(
@@ -696,6 +748,7 @@ class _RequisitionListViewState extends State<RequisitionListView> {
                                     content: Text('Requisition Rejected'),
                                   ),
                                 );
+                                _rejectRequisition(requisition);
                               },
                             ),
                             IconButton(

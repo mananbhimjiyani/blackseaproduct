@@ -1,10 +1,15 @@
+// ignore_for_file: prefer_for_elements_to_map_fromiterable
+
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'productDetails.dart';
 import '../Schemas/product.dart';
+import '../Schemas/requisition.dart';
 import '../widget/drawer_widget.dart';
 import '../widget/bottom_navigation_bar_widget.dart';
-import '../DummyData/ProductsDummy.dart';
+import 'package:blackseaproduct/views/productRequestView.dart';
 
 class ProductRequestCreation extends StatefulWidget {
   const ProductRequestCreation({super.key});
@@ -59,27 +64,27 @@ class _ProductRequestCreationState extends State<ProductRequestCreation> {
   }
 
   void _loadProducts() async {
-    List<Product> dummyProducts = generateDummyProducts();
-    setState(() {
-      _products = dummyProducts;
-      _filteredProducts = List.from(_products);
-      _quantityControllers = { for (var product in _products) _products.indexOf(product) : TextEditingController() };
-    });
-    // final response =
-    //     await http.get(Uri.parse('http://172.20.10.8:3000/products'));
-    // if (response.statusCode == 200) {
-    //   final List<dynamic> data = json.decode(response.body);
-    //   setState(() {
-    //     _products = data.map((json) => Product.fromJson(json)).toList();
-    //     _filteredProducts = List.from(_products); // Initialize filtered list
-    //     // Initialize quantity controllers
-    //     _quantityControllers = Map.fromIterable(_products,
-    //         key: (product) => _products.indexOf(product),
-    //         value: (product) => TextEditingController());
-    //   });
-    // } else {
-    //   throw Exception('Failed to load products');
-    // }
+    // List<Product> dummyProducts = generateDummyProducts();
+    // setState(() {
+    //   _products = dummyProducts;
+    //   _filteredProducts = List.from(_products);
+    //   _quantityControllers = { for (var product in _products) _products.indexOf(product) : TextEditingController() };
+    // });
+    final response =
+        await http.get(Uri.parse('http://172.20.10.8:3000/products'));
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      setState(() {
+        _products = data.map((json) => Product.fromJson(json)).toList();
+        _filteredProducts = List.from(_products); // Initialize filtered list
+        // Initialize quantity controllers
+        _quantityControllers = Map.fromIterable(_products,
+            key: (product) => _products.indexOf(product),
+            value: (product) => TextEditingController());
+      });
+    } else {
+      throw Exception('Failed to load products');
+    }
 
   }
 
@@ -99,6 +104,36 @@ class _ProductRequestCreationState extends State<ProductRequestCreation> {
           builder: (context) => ProductDetailsView(product: product)),
     );
   }
+
+   void _sendProductRequest() {
+  // Extract the selected products and quantities
+  List<Map<String, dynamic>> selectedProducts = [];
+  for (int index = 0; index < _filteredProducts.length; index++) {
+    final product = _filteredProducts[index];
+    final int quantity = int.tryParse(_quantityControllers[index]?.text ?? '0') ?? 0;
+
+    if (quantity > 0) {
+      selectedProducts.add({
+        'productName': product.productName,
+        'quantity': quantity,
+      });
+    }
+  }
+
+  // Construct the request payload
+  final Map<String, dynamic> requestPayload = {
+    'reqID': '1',
+    'username': 'John Doe', // Replace with actual username
+    'products': selectedProducts,
+  };
+
+  // Now you can send the request with the payload
+  // Replace the following lines with your actual request logic
+  print('Sending product request: $requestPayload');
+  
+  // Pass the data back to RequisitionListView page
+  Navigator.pop(context, requestPayload);
+}
 
   @override
   Widget build(BuildContext context) {
@@ -370,9 +405,11 @@ class _ProductRequestCreationState extends State<ProductRequestCreation> {
               ),
             )
           : FloatingActionButton(
-              onPressed: () {
-                // Action when 'Create New Request' is selected
-              },
+              onPressed:() {
+                _sendProductRequest();
+                // Navigate back to the RequisitionListView page
+                Navigator.pop(context);
+              }, 
               backgroundColor: Colors.green,
               child: const Icon(
                 Icons.check,
